@@ -1,76 +1,164 @@
+<!DOCTYPE html>
 <html>
-    <head>
-        <script src="https://rawgit.com/enyo/dropzone/master/dist/dropzone.js"></script>
-        <link rel="stylesheet" href="https://rawgit.com/enyo/dropzone/master/dist/dropzone.css">
-        <!-- Source: http://wiki.openstreetmap.org/wiki/Openlayers_Track_example -->
-        <title>Simple OSM GPX Track</title>
-        <!-- bring in the OpenLayers javascript library
-                 (here we bring it from the remote site, but you could
-                 easily serve up this javascript yourself) -->
-        <script src="http://www.openlayers.org/api/OpenLayers.js"></script>
-        <!-- bring in the OpenStreetMap OpenLayers layers.
-                 Using this hosted file will make sure we are kept up
-                 to date with any necessary changes -->
-        <script src="http://www.openstreetmap.org/openlayers/OpenStreetMap.js"></script>
-        <script src="js/dropzone.js"></script>
-        <script type="text/javascript">
+<head>
+<title>Drag-and-Drop example</title>
+<script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="http://openlayers.org/en/v3.4.0/resources/layout.cs" type="text/css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.5.0/ol.js"></script>
 
-            var map; //complex object of type OpenLayers.Map
+</head>
+<body>
+<div class="container-fluid">
 
-            function init() {
-                map = new OpenLayers.Map("map", {
-                    controls: [
-                        new OpenLayers.Control.Navigation(),
-                        new OpenLayers.Control.PanZoomBar(),
-                        new OpenLayers.Control.LayerSwitcher(),
-                        new OpenLayers.Control.Attribution()],
-                    maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34),
-                    maxResolution: 156543.0399,
-                    numZoomLevels: 19,
-                    units: 'm',
-                    projection: new OpenLayers.Projection("EPSG:900913"),
-                    displayProjection: new OpenLayers.Projection("EPSG:4326")
-                });
+<div class="row-fluid">
+  <div class="span12">
+    <div id="map" class="map"></div>
+    <div class="span4 offset4 pull-right">
+      <div id="info" class="alert alert-success">
+        &nbsp;
+      </div>
+    </div>
+  </div>
+</div>
 
-                // Define the map layer
-                // Here we use a predefined layer that will be kept up to date with URL changes
-                layerMapnik = new OpenLayers.Layer.OSM.Mapnik("Mapnik");
-                map.addLayer(layerMapnik);
-                layerCycleMap = new OpenLayers.Layer.OSM.CycleMap("CycleMap");
-                map.addLayer(layerCycleMap);
-                layerMarkers = new OpenLayers.Layer.Markers("Markers");
-                map.addLayer(layerMarkers);
+</div>
+<script>
+var defaultStyle = {
+  'Point': [new ol.style.Style({
+    image: new ol.style.Circle({
+      fill: new ol.style.Fill({
+        color: 'rgba(255,255,0,0.5)'
+      }),
+      radius: 5,
+      stroke: new ol.style.Stroke({
+        color: '#ff0',
+        width: 1
+      })
+    })
+  })],
+  'LineString': [new ol.style.Style({
+    stroke: new ol.style.Stroke({
+      color: '#f00',
+      width: 3
+    })
+  })],
+  'Polygon': [new ol.style.Style({
+    fill: new ol.style.Fill({
+      color: 'rgba(0,255,255,0.5)'
+    }),
+    stroke: new ol.style.Stroke({
+      color: '#0ff',
+      width: 1
+    })
+  })],
+  'MultiPoint': [new ol.style.Style({
+    image: new ol.style.Circle({
+      fill: new ol.style.Fill({
+        color: 'rgba(255,0,255,0.5)'
+      }),
+      radius: 5,
+      stroke: new ol.style.Stroke({
+        color: '#f0f',
+        width: 1
+      })
+    })
+  })],
+  'MultiLineString': [new ol.style.Style({
+    stroke: new ol.style.Stroke({
+      color: '#0f0',
+      width: 3
+    })
+  })],
+  'MultiPolygon': [new ol.style.Style({
+    fill: new ol.style.Fill({
+      color: 'rgba(0,0,255,0.5)'
+    }),
+    stroke: new ol.style.Stroke({
+      color: '#00f',
+      width: 1
+    })
+  })]
+};
 
+var styleFunction = function(feature, resolution) {
+  var featureStyleFunction = feature.getStyleFunction();
+  if (featureStyleFunction) {
+    return featureStyleFunction.call(feature, resolution);
+  } else {
+    return defaultStyle[feature.getGeometry().getType()];
+  }
+};
 
-                // Add a Layer with Marker
-                var size = new OpenLayers.Size(21, 25);
-                var offset = new OpenLayers.Pixel(-(size.w / 2), -size.h);
-                var icon = new OpenLayers.Icon('http://www.openstreetmap.org/openlayers/img/marker.png', size, offset);
-                layerMarkers.addMarker(new OpenLayers.Marker(lonLat, icon));
+var dragAndDropInteraction = new ol.interaction.DragAndDrop({
+  formatConstructors: [
+    ol.format.GPX,
+    ol.format.GeoJSON,
+    ol.format.IGC,
+    ol.format.KML,
+    ol.format.TopoJSON
+  ]
+});
 
-                // Start position for the map (hardcoded here for simplicity,
-                // but maybe you want to get this from the URL params)
-                var lat = 47.496792;
-                var lon = 7.571726;
-                var zoom = 13;
-                var lonLat = new OpenLayers.LonLat(lon, lat).transform(new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject());
-                map.setCenter(lonLat, zoom);
-            }
-        </script>
+var map = new ol.Map({
+  interactions: ol.interaction.defaults().extend([dragAndDropInteraction]),
+  layers: [
+    new ol.layer.Tile({
+      source: new ol.source.BingMaps({
+        imagerySet: 'Aerial',
+        key: 'Ak-dzM4wZjSqTlzveKz5u0d4IQ4bRzVI309GxmkgSVr1ewS6iPSrOvOKhA-CJlm3'
+      })
+    })
+  ],
+  target: 'map',
+  view: new ol.View({
+    center: ol.proj.transform([0,0], , 'EPSG:3857','EPSG:4326'),
+    zoom: 4
+  })
+});
 
-    </head>
-    <!-- body.onload is called once the page is loaded (call the 'init' function) -->
-    <body onload="init();">
-        <!-- define a DIV into which the map will appear. Make it take up the whole window -->
-        <!--<div style="width:90%; height:90%" id="map"></div>-->
-        <div class="container-fluid">
+dragAndDropInteraction.on('addfeatures', function(event) {
+  var vectorSource = new ol.source.Vector({
+    features: event.features
+  });
+  map.addLayer(new ol.layer.Vector({
+    source: vectorSource,
+    style: styleFunction
+  }));
+  map.getView().fitExtent(
+      vectorSource.getExtent(), /** @type {ol.Size} */ (map.getSize()));
+});
 
-            <hr>
-            <form action="/file-upload" class="dropzone">
-                <div class="fallback">
-                    <input name="file" type="file" multiple />
-                </div>
-            </form>
-        </div>
-    </body>
+var displayFeatureInfo = function(pixel) {
+  var features = [];
+  map.forEachFeatureAtPixel(pixel, function(feature, layer) {
+    features.push(feature);
+  });
+  if (features.length > 0) {
+    var info = [];
+    var i, ii;
+    for (i = 0, ii = features.length; i < ii; ++i) {
+      info.push(features[i].get('name'));
+    }
+    document.getElementById('info').innerHTML = info.join(', ') || '&nbsp';
+  } else {
+    document.getElementById('info').innerHTML = '&nbsp;';
+  }
+};
+
+map.on('pointermove', function(evt) {
+  if (evt.dragging) {
+    return;
+  }
+  var pixel = map.getEventPixel(evt.originalEvent);
+  displayFeatureInfo(pixel);
+});
+
+map.on('click', function(evt) {
+  displayFeatureInfo(evt.pixel);
+});
+
+</script>
+</body>
 </html>
