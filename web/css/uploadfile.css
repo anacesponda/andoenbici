@@ -1,0 +1,36 @@
+div.browse-wrap {
+        top:0;
+        left:0;
+        margin:20px;
+        cursor:pointer;
+        overflow:hidden;
+        padding:20px 60px;
+        text-align:center;
+        position:relative;
+        background-color:#f6f7f8;
+        border:solid 1px #d2d2d7;}
+    div.title {
+        color:#3b5998;
+        font-size:14px;
+        font-weight:bold;
+        font-family:tahoma, arial, sans-serif;}
+    input.upload {
+        right:0;
+        margin:0;
+        bottom:0;
+        padding:0;
+        opacity:0;
+        height:300px;
+        outline:none;
+        cursor:inherit;
+        position:absolute;
+        font-size:1000px !important;}
+    span.upload-path {
+        text-align: center;
+        margin:20px;
+        display:block;
+        font-size: 80%;
+        color:#3b5998;
+        font-weight:bold;
+        font-family:tahoma, arial, sans-serif;
+}
