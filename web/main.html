@@ -50,33 +50,36 @@ and open the template in the editor.
         <div style="margin-left:50px;margin-top:70px"> 
             <iframe  width="1250" height="500" frameborder="0" scrolling="no" marginheight="20" marginwidth="30" src="http://www.openstreetmap.org/export/embed.html?bbox=-56.15239977836609%2C-34.90937287923578%2C-56.14644527435303%2C-34.906610175748256&amp;layer=transportmap&amp;marker=-34.907991539111784%2C-56.14942252635956" style="border: 1px solid black"></iframe><br/><small><a href="http://www.openstreetmap.org/?mlat=-34.90799&amp;mlon=-56.14942#map=18/-34.90799/-56.14942&amp;layers=TN">Ver mapa más grande</a></small>
         </div>
+        <div style="margin-left: 50px; margin-top: 50px; opacity: 0.5;border-radius: 25px; border: 2px solid #777777; width: 700px;height: 300px ">
 
-        <div style="margin-left: 50px; margin-top: 50px; opacity: 0.5;border-radius: 25px; border: 2px solid #777777; width: 500px;height: 300px ">
             <form method="post" action="actualizarMapa">
                 <table style="width:100%;margin-top: 20px; margin-left: 15px;" >
-
+                    <tr>
+                        <td style="font-size: 200%; font-weight: bold; color: #53CBE9;  ">>Mi información</td>
+                        <td style="font-size: 200%; font-weight: bold;">>Compartido contigo</td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: #FFFFFF;font-size: 7px">&nbsp;</td>
+                    </tr>
                     <tr>
                         <td><input type="checkbox" name="personales" value="mis_rutas">Mis recorridos</td>
+                        <td><input type="checkbox" name="compartidos" value="mis_rutas">Recorridos compartidos</td>
                     </tr>
                     <tr>
                         <td><input type="checkbox" name="personales" value="mayor_tramo">Mayor tramo</td>
+                        <td><input type="checkbox" name="compartidos" value="mayor_tramo">Mayor tramo</td>
                     </tr> 
                     <tr>
                         <td><input type="checkbox" name="personales" value="mayor_tiempo">Mayor tiempo</td>
+                        <td><input type="checkbox" name="compartidos" value="mayor_tiempo">Mayor tiempo</td>
                     </tr>     
                     <tr>
                         <td><input type="checkbox" name="personales" value="fin_semana">Fines de semana</td>
+                        <td><input type="checkbox" name="compartidos" value="fin_semana">Fines de semana</td>
                     </tr> 
-
-                    <tr>
-                        <td></td> 
-                    </tr>
-                    <td></td>
-                    <td></td>    
-                    <td></td>
-
                 </table>
-                <input type="submit" id="actualizar" value="Mostrar" />
+                <input style="border:2px solid #ccc; color: black;border-radius: 5px; font-weight: bold; font-size: 15px; position:relative;left: 40%; margin-top: 30px; width: 100px;height: 25px" type="submit" id="actualizar" value="Mostrar" />
+
             </form>
         </div>
 
